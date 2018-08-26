@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+
+	<display-name>Archetype Created Web Application</display-name>
+
+	<resource-ref>
+		<res-ref-name>jdbc/DefaultDB</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+		<res-ref-name>KeyStoreService</res-ref-name>
+		<res-type>com.sap.cloud.crypto.keystore.api.KeyStoreService</res-type>
+	</resource-ref>
+	<resource-ref>
+		<res-ref-name>connectivityConfiguration</res-ref-name>
+		<res-type>com.sap.core.connectivity.api.configuration.ConnectivityConfiguration</res-type>
+	</resource-ref>
+
+	<!-- ******************************************************************* -->
+	<!-- *** CORS Filter *************************************************** -->
+	<!-- ******************************************************************* -->
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+		<init-param>
+			<param-name>cors.allowed.origins</param-name>
+			<param-value>*</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.allowed.methods</param-name>
+			<param-value>GET,POST,HEAD,OPTIONS,PUT,DELETE</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.allowed.headers</param-name>
+			<param-value> 
+				Accept,
+				Accept-Encoding,
+				Accept-Language,
+				Connection,
+				Content-Type, 
+				Content-Length,
+				Cookie,
+				DataServiceVersion,
+				Host,
+				MaxDataServiceVersion,
+				Origin,
+				Referer,
+				X-Requested-With, 
+				Origin, 
+				sap-contextid-accept, 
+				sap-cancel-on-close, 
+				sap-contextid-accept, 
+				x-csrf-token,
+				User-Agent
+		</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.exposed.headers</param-name>
+			<param-value>
+				Accept,
+				Accept-Encoding,
+				Accept-Language,
+				Connection,
+				Content-Type, 
+				Content-Length,
+				Cookie,
+				DataServiceVersion,
+				Host,
+				MaxDataServiceVersion,
+				Origin,
+				Referer,
+				X-Requested-With, 
+				Origin, 
+				sap-contextid-accept, 
+				sap-cancel-on-close, 
+				sap-contextid-accept, 
+				x-csrf-token,
+				User-Agent
+		 </param-value>
+		</init-param>
+		<!-- <init-param>
+			<param-name>cors.support.credentials</param-name>
+			<param-value>true</param-value>
+		</init-param> -->
+		<init-param>
+			<param-name>cors.preflight.maxage</param-name>
+			<param-value>1000</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- ******************************************************************* -->
+	<!-- *** Spring IoC Container injection via Listener ******************* -->
+	<!-- ******************************************************************* -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	<!-- Configure ContextLoaderListener to use AnnotationConfigWebApplicationContext 
+		instead of the default XmlWebApplicationContext -->
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>
+            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+        </param-value>
+	</context-param>
+	<!-- Configuration locations must consist of one or more comma- or space-delimited 
+		fully-qualified @Configuration classes. Fully-qualified packages may also 
+		be specified for component-scanning -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>my.agro.transportation.management.web.spring.ioc.container.MyAppConfig</param-value>
+	</context-param>
+
+	<!-- ******************************************************************* -->
+	<!-- *** ODATA SERVLET ************************************************* -->
+	<!-- ******************************************************************* -->
+	<servlet>
+		<servlet-name>oDataAPI</servlet-name>
+		<servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>org.apache.olingo.odata2.core.rest.app.ODataApplication</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.apache.olingo.odata2.service.factory</param-name>
+			<param-value>my.agro.transportation.management.web.odata.v2.jpa.MyODataJPAServiceFactory</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>oDataAPI</servlet-name>
+		<url-pattern>/odata/*</url-pattern>
+	</servlet-mapping>
+
+</web-app>
